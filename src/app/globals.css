@@ -133,6 +133,16 @@ body {
   overflow-x: hidden;
 }
 
+main {
+  flex: 1;
+}
+
+@media (min-width: 768px) {
+  main {
+    margin-left: var(--sidebar-width);
+  }
+}
+
 /* ============================================
    Scrollbar Styling
    ============================================ */
@@ -179,9 +189,15 @@ body {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  padding: 20px;
+  padding: 16px; /* Reduced from 20px for mobile */
   box-shadow: var(--shadow-sm);
   transition: all 0.3s var(--transition);
+}
+
+@media (min-width: 768px) {
+  .stat-card {
+    padding: 20px;
+  }
 }
 
 .stat-card:hover {
@@ -198,17 +214,24 @@ body {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 12px 24px;
+  padding: 10px 20px; /* Reduced for mobile */
   background: var(--accent);
   color: white;
   border: none;
   border-radius: var(--radius-md);
   font-weight: 600;
-  font-size: 15px;
+  font-size: 14px; /* Reduced for mobile */
   cursor: pointer;
   transition: all 0.2s var(--transition);
   user-select: none;
   -webkit-user-select: none;
+}
+
+@media (min-width: 768px) {
+  .btn-primary {
+    padding: 12px 24px;
+    font-size: 15px;
+  }
 }
 
 .btn-primary:hover {
@@ -225,15 +248,22 @@ body {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 12px 24px;
+  padding: 10px 20px; /* Reduced */
   background: var(--bg-secondary);
   color: var(--text-primary);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   font-weight: 500;
-  font-size: 15px;
+  font-size: 14px; /* Reduced */
   cursor: pointer;
   transition: all 0.2s var(--transition);
+}
+
+@media (min-width: 768px) {
+  .btn-secondary {
+    padding: 12px 24px;
+    font-size: 15px;
+  }
 }
 
 .btn-secondary:hover {
@@ -387,25 +417,30 @@ body {
 .page-container {
   max-width: 680px;
   margin: 0 auto;
-  padding: 24px 16px;
-  padding-bottom: calc(var(--bottom-nav-height) + 24px);
+  padding: 20px 16px;
+  padding-bottom: calc(var(--bottom-nav-height) + 20px);
 }
 
 @media (min-width: 768px) {
   .page-container {
-    padding: 32px 24px;
-    padding-bottom: 32px;
-    margin-left: var(--sidebar-width);
-    max-width: calc(680px + var(--sidebar-width));
+    padding: 40px 32px;
+    padding-bottom: 40px;
+    max-width: 880px; /* Rộng hơn trên web */
   }
 }
 
 .page-title {
-  font-size: 28px;
+  font-size: 24px; /* Reduced from 28px */
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -0.5px;
   margin-bottom: 4px;
+}
+
+@media (min-width: 768px) {
+  .page-title {
+    font-size: 28px;
+  }
 }
 
 .page-subtitle {
@@ -445,13 +480,19 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 32px 24px;
+  padding: 24px 16px; /* Reduced from 32px 24px */
   backface-visibility: hidden;
   border-radius: var(--radius-2xl);
   background: var(--bg-card);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-lg);
   overflow-y: auto;
+}
+
+@media (min-width: 768px) {
+  .flashcard-face {
+    padding: 32px 24px;
+  }
 }
 
 .flashcard-back {

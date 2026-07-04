@@ -105,7 +105,7 @@ export default function DashboardPage() {
           </div>
           <div
             style={{
-              fontSize: '28px',
+              fontSize: '24px',
               fontWeight: 700,
               color: 'var(--text-primary)',
               letterSpacing: '-1px',
@@ -150,7 +150,7 @@ export default function DashboardPage() {
           </div>
           <div
             style={{
-              fontSize: '28px',
+              fontSize: '24px',
               fontWeight: 700,
               color: 'var(--text-primary)',
               letterSpacing: '-1px',
@@ -195,7 +195,7 @@ export default function DashboardPage() {
           </div>
           <div
             style={{
-              fontSize: '28px',
+              fontSize: '24px',
               fontWeight: 700,
               color: 'var(--text-primary)',
               letterSpacing: '-1px',
@@ -240,7 +240,7 @@ export default function DashboardPage() {
           </div>
           <div
             style={{
-              fontSize: '28px',
+              fontSize: '24px',
               fontWeight: 700,
               color: 'var(--text-primary)',
               letterSpacing: '-1px',
