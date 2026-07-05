@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 /* ============================================
-   LexiFlow — Design System
-   Apple-inspired, dark-mode-first
+   LexiFlow — Coinbase Design System
+   Institutional trust, minimalist canvas, editorial pacing
    ============================================ */
 
 @theme inline {
@@ -13,103 +13,113 @@
 }
 
 /* ============================================
-   CSS Custom Properties — Light Mode
+   CSS Custom Properties — Light Mode (Canvas White)
    ============================================ */
 :root {
+  /* Surface & Canvas */
   --bg-primary: #FFFFFF;
-  --bg-secondary: #F5F5F7;
-  --bg-tertiary: #E8E8ED;
-  --bg-card: rgba(255, 255, 255, 0.80);
-  --bg-card-hover: rgba(255, 255, 255, 0.95);
-  --bg-overlay: rgba(0, 0, 0, 0.4);
+  --bg-secondary: #F7F7F7;
+  --bg-tertiary: #EEF0F3;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #F7F7F7;
+  --bg-overlay: rgba(10, 11, 13, 0.5);
 
-  --text-primary: #1D1D1F;
-  --text-secondary: #6E6E73;
-  --text-tertiary: #AEAEB2;
+  /* Typography & Ink */
+  --text-primary: #0A0B0D;
+  --text-secondary: #5B616E;
+  --text-tertiary: #7C828A;
   --text-inverse: #FFFFFF;
 
-  --accent: #007AFF;
-  --accent-hover: #0056CC;
-  --accent-light: rgba(0, 122, 255, 0.1);
-  --accent-subtle: rgba(0, 122, 255, 0.06);
+  /* Brand Voltage — Coinbase Blue (#0052ff) */
+  --accent: #0052FF;
+  --accent-hover: #003ECC;
+  --accent-light: rgba(0, 82, 255, 0.08);
+  --accent-subtle: rgba(0, 82, 255, 0.04);
 
-  --border: rgba(0, 0, 0, 0.06);
-  --border-strong: rgba(0, 0, 0, 0.12);
+  /* Hairlines (1px dividers) */
+  --border: #DEE1E6;
+  --border-strong: #EEF0F3;
 
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.04);
-  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
-  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.1), 0 8px 20px rgba(0, 0, 0, 0.06);
+  /* Elevation & Shadows (Single shadow tier) */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.06);
+  --shadow-xl: 0 20px 50px rgba(0, 0, 0, 0.08);
 
-  --glass-bg: rgba(255, 255, 255, 0.72);
-  --glass-border: rgba(255, 255, 255, 0.2);
+  /* Glass / Overlay */
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: #DEE1E6;
   --glass-blur: 20px;
 
-  --rating-forgot: #FF3B30;
-  --rating-forgot-bg: rgba(255, 59, 48, 0.1);
-  --rating-hard: #FF9500;
-  --rating-hard-bg: rgba(255, 149, 0, 0.1);
-  --rating-good: #34C759;
-  --rating-good-bg: rgba(52, 199, 89, 0.1);
-  --rating-easy: #007AFF;
-  --rating-easy-bg: rgba(0, 122, 255, 0.1);
+  /* Trading Semantics & Review Ratings */
+  --rating-forgot: #CF202F;
+  --rating-forgot-bg: rgba(207, 32, 47, 0.08);
+  --rating-hard: #F4B000;
+  --rating-hard-bg: rgba(244, 176, 0, 0.1);
+  --rating-good: #05B169;
+  --rating-good-bg: rgba(5, 177, 105, 0.08);
+  --rating-easy: #7C3AED;
+  --rating-easy-bg: rgba(124, 58, 237, 0.08);
 
-  --success: #34C759;
-  --warning: #FF9500;
-  --error: #FF3B30;
-  --info: #5AC8FA;
+  --success: #05B169;
+  --warning: #F4B000;
+  --error: #CF202F;
+  --info: #0052FF;
 
+  /* Coinbase Geometry Scale */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
-  --radius-xl: 20px;
+  --radius-xl: 24px;
   --radius-2xl: 24px;
+  --radius-pill: 100px;
   --radius-full: 9999px;
 
   --transition: cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  --nav-height: 56px;
+  --nav-height: 64px;
   --bottom-nav-height: 84px;
   --sidebar-width: 260px;
 }
 
 /* ============================================
-   Dark Mode
+   Dark Mode (Surface Dark #0a0b0d)
    ============================================ */
 .dark {
-  --bg-primary: #000000;
-  --bg-secondary: #1C1C1E;
-  --bg-tertiary: #2C2C2E;
-  --bg-card: rgba(28, 28, 30, 0.80);
-  --bg-card-hover: rgba(44, 44, 46, 0.95);
-  --bg-overlay: rgba(0, 0, 0, 0.6);
+  --bg-primary: #0A0B0D;
+  --bg-secondary: #16181C;
+  --bg-tertiary: #22252B;
+  --bg-card: #16181C;
+  --bg-card-hover: #1E2026;
+  --bg-overlay: rgba(0, 0, 0, 0.7);
 
-  --text-primary: #F5F5F7;
-  --text-secondary: #8E8E93;
-  --text-tertiary: #48484A;
-  --text-inverse: #000000;
+  --text-primary: #FFFFFF;
+  --text-secondary: #A8ACB3;
+  --text-tertiary: #7C828A;
+  --text-inverse: #0A0B0D;
 
-  --accent: #0A84FF;
-  --accent-hover: #409CFF;
-  --accent-light: rgba(10, 132, 255, 0.15);
-  --accent-subtle: rgba(10, 132, 255, 0.08);
+  /* Brand Voltage remains Coinbase Blue */
+  --accent: #0052FF;
+  --accent-hover: #4080FF;
+  --accent-light: rgba(0, 82, 255, 0.15);
+  --accent-subtle: rgba(0, 82, 255, 0.08);
 
-  --border: rgba(255, 255, 255, 0.06);
-  --border-strong: rgba(255, 255, 255, 0.12);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.15);
 
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.4);
-  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 20px 50px rgba(0, 0, 0, 0.6);
 
-  --glass-bg: rgba(28, 28, 30, 0.72);
-  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-bg: rgba(22, 24, 28, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.08);
 
-  --rating-forgot-bg: rgba(255, 59, 48, 0.15);
-  --rating-hard-bg: rgba(255, 149, 0, 0.15);
-  --rating-good-bg: rgba(52, 199, 89, 0.15);
-  --rating-easy-bg: rgba(0, 122, 255, 0.15);
+  --rating-forgot-bg: rgba(207, 32, 47, 0.15);
+  --rating-hard-bg: rgba(244, 176, 0, 0.15);
+  --rating-good-bg: rgba(5, 177, 105, 0.15);
+  --rating-easy-bg: rgba(124, 58, 237, 0.15);
 }
 
 /* ============================================
@@ -117,6 +127,34 @@
    ============================================ */
 * {
   -webkit-tap-highlight-color: transparent;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Suppress focus-visible on elements that handle it themselves */
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible,
+.btn-ghost:focus-visible,
+.btn-icon:focus-visible,
+.input:focus-visible {
+  outline: none;
+}
+
+.btn-primary:focus-visible {
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+
+.btn-secondary:focus-visible {
+  box-shadow: 0 0 0 3px var(--bg-tertiary);
+}
+
+.btn-icon:focus-visible {
+  background: var(--bg-secondary);
+  box-shadow: 0 0 0 2px var(--accent-light);
 }
 
 html {
@@ -165,14 +203,14 @@ main {
 }
 
 /* ============================================
-   Glass Card
+   Glass Card / Feature Card (24px Radius)
    ============================================ */
 .glass-card {
   background: var(--glass-bg);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
   border: 1px solid var(--glass-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
   box-shadow: var(--shadow-md);
   transition: all 0.3s var(--transition);
 }
@@ -183,20 +221,20 @@ main {
 }
 
 /* ============================================
-   Stat Card
+   Stat Card / Product UI Card (24px Radius)
    ============================================ */
 .stat-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  padding: 16px; /* Reduced from 20px for mobile */
+  padding: 16px;
   box-shadow: var(--shadow-sm);
   transition: all 0.3s var(--transition);
 }
 
 @media (min-width: 768px) {
   .stat-card {
-    padding: 20px;
+    padding: 24px;
   }
 }
 
@@ -207,20 +245,20 @@ main {
 }
 
 /* ============================================
-   Button Styles
+   Button Styles — Editorial Pill Geometry (100px)
    ============================================ */
 .btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 10px 20px; /* Reduced for mobile */
+  padding: 12px 24px;
   background: var(--accent);
   color: white;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-pill);
   font-weight: 600;
-  font-size: 14px; /* Reduced for mobile */
+  font-size: 15px;
   cursor: pointer;
   transition: all 0.2s var(--transition);
   user-select: none;
@@ -229,14 +267,14 @@ main {
 
 @media (min-width: 768px) {
   .btn-primary {
-    padding: 12px 24px;
-    font-size: 15px;
+    padding: 14px 28px;
+    font-size: 16px;
   }
 }
 
 .btn-primary:hover {
   background: var(--accent-hover);
-  transform: scale(1.02);
+  transform: scale(1.01);
 }
 
 .btn-primary:active {
@@ -248,27 +286,27 @@ main {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 10px 20px; /* Reduced */
-  background: var(--bg-secondary);
+  padding: 12px 24px;
+  background: var(--bg-tertiary);
   color: var(--text-primary);
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-pill);
   font-weight: 500;
-  font-size: 14px; /* Reduced */
+  font-size: 15px;
   cursor: pointer;
   transition: all 0.2s var(--transition);
 }
 
 @media (min-width: 768px) {
   .btn-secondary {
-    padding: 12px 24px;
-    font-size: 15px;
+    padding: 14px 28px;
+    font-size: 16px;
   }
 }
 
 .btn-secondary:hover {
-  background: var(--bg-tertiary);
-  border-color: var(--border-strong);
+  background: var(--border-strong);
+  border-color: var(--text-tertiary);
 }
 
 .btn-ghost {
@@ -276,12 +314,12 @@ main {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 8px 16px;
+  padding: 8px 18px;
   background: transparent;
   color: var(--accent);
   border: none;
-  border-radius: var(--radius-md);
-  font-weight: 500;
+  border-radius: var(--radius-pill);
+  font-weight: 600;
   font-size: 15px;
   cursor: pointer;
   transition: all 0.2s var(--transition);
@@ -300,7 +338,7 @@ main {
   background: transparent;
   color: var(--text-secondary);
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-full);
   cursor: pointer;
   transition: all 0.2s var(--transition);
 }
@@ -311,11 +349,11 @@ main {
 }
 
 /* ============================================
-   Input Styles
+   Input Styles (12px Radius)
    ============================================ */
 .input {
   width: 100%;
-  padding: 12px 16px;
+  padding: 14px 16px;
   background: var(--bg-secondary);
   color: var(--text-primary);
   border: 1px solid var(--border);
@@ -328,7 +366,7 @@ main {
 
 .input:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-light);
+  box-shadow: 0 0 0 2px var(--accent-light);
   background: var(--bg-primary);
 }
 
@@ -343,7 +381,7 @@ main {
 
 .label {
   display: block;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--text-secondary);
   margin-bottom: 6px;
@@ -353,23 +391,25 @@ main {
 
 .select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236E6E73' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235B616E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 12px center;
+  background-position: right 14px center;
   padding-right: 36px;
 }
 
 /* ============================================
-   Badge / Chip
+   Badge / Chip (Pill 100px)
    ============================================ */
 .badge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 10px;
-  font-size: 12px;
+  padding: 4px 12px;
+  font-size: 11px;
   font-weight: 600;
-  border-radius: var(--radius-full);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border-radius: var(--radius-pill);
   background: var(--accent-light);
   color: var(--accent);
   white-space: nowrap;
@@ -382,17 +422,17 @@ main {
 }
 
 /* ============================================
-   Toast / Notification
+   Toast / Notification (Pill 100px)
    ============================================ */
 .toast {
   position: fixed;
   bottom: calc(var(--bottom-nav-height) + 16px);
   left: 50%;
   transform: translateX(-50%);
-  padding: 12px 24px;
+  padding: 14px 28px;
   background: var(--text-primary);
   color: var(--text-inverse);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-pill);
   font-size: 14px;
   font-weight: 500;
   box-shadow: var(--shadow-lg);
@@ -417,40 +457,42 @@ main {
 .page-container {
   max-width: 680px;
   margin: 0 auto;
-  padding: 20px 16px;
-  padding-bottom: calc(var(--bottom-nav-height) + 20px);
+  padding: 24px 16px;
+  padding-bottom: calc(var(--bottom-nav-height) + 24px);
 }
 
 @media (min-width: 768px) {
   .page-container {
-    padding: 40px 32px;
-    padding-bottom: 40px;
-    max-width: 880px; /* Rộng hơn trên web */
+    padding: 48px 32px;
+    padding-bottom: 48px;
+    max-width: 880px;
   }
 }
 
+/* CoinbaseDisplay: Weight 400, negative tracking (-1.5px) */
 .page-title {
-  font-size: 24px; /* Reduced from 28px */
-  font-weight: 700;
+  font-size: 26px;
+  font-weight: 400;
   color: var(--text-primary);
-  letter-spacing: -0.5px;
-  margin-bottom: 4px;
+  letter-spacing: -1.5px;
+  margin-bottom: 6px;
 }
 
 @media (min-width: 768px) {
   .page-title {
-    font-size: 28px;
+    font-size: 32px;
+    letter-spacing: -1.8px;
   }
 }
 
 .page-subtitle {
   font-size: 15px;
   color: var(--text-secondary);
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 /* ============================================
-   Flashcard
+   Flashcard (24px Radius)
    ============================================ */
 .flashcard-container {
   perspective: 1200px;
@@ -480,9 +522,9 @@ main {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 24px 16px; /* Reduced from 32px 24px */
+  padding: 24px 16px;
   backface-visibility: hidden;
-  border-radius: var(--radius-2xl);
+  border-radius: var(--radius-xl);
   background: var(--bg-card);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-lg);

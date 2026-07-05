@@ -27,7 +27,7 @@ export function MobileHeader() {
           style={{
             width: '28px',
             height: '28px',
-            borderRadius: '8px',
+            borderRadius: 'var(--radius-full)',
             background: 'linear-gradient(135deg, var(--accent), #5856D6)',
             display: 'flex',
             alignItems: 'center',

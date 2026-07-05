@@ -158,6 +158,20 @@ export default function QuizPage() {
     }
   };
 
+  // Keyboard shortcut: Enter = next question during feedback
+  useEffect(() => {
+    if (state !== 'feedback') return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        nextQuestion();
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state, currentIndex, questions.length]);
+
   // ========================
   // Loading State
   // ========================
@@ -224,7 +238,7 @@ export default function QuizPage() {
                   background: 'var(--rating-easy-bg)',
                 }}
               >
-                <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-md)', background: 'var(--rating-easy)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-full)', background: 'var(--rating-easy)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <ListOrdered size={24} />
                 </div>
                 <div>
@@ -250,7 +264,7 @@ export default function QuizPage() {
                   background: 'var(--rating-hard-bg)',
                 }}
               >
-                <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-md)', background: 'var(--rating-hard)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-full)', background: 'var(--rating-hard)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Keyboard size={24} />
                 </div>
                 <div>
@@ -276,7 +290,7 @@ export default function QuizPage() {
                   background: 'var(--accent-light)',
                 }}
               >
-                <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-md)', background: 'var(--accent)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-full)', background: 'var(--accent)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Headphones size={24} />
                 </div>
                 <div>
@@ -314,13 +328,13 @@ export default function QuizPage() {
           
           <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', margin: '32px 0' }}>
             <div className="stat-card" style={{ minWidth: '100px' }}>
-              <div style={{ fontSize: '28px', fontWeight: 700, color: 'var(--rating-good)' }}>
+              <div style={{ fontSize: '28px', fontWeight: 500, color: 'var(--rating-good)', fontFamily: 'var(--font-mono)' }}>
                 {accuracy}%
               </div>
               <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Chính xác</div>
             </div>
             <div className="stat-card" style={{ minWidth: '100px' }}>
-              <div style={{ fontSize: '28px', fontWeight: 700, color: 'var(--text-primary)' }}>
+              <div style={{ fontSize: '28px', fontWeight: 500, color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
                 {correctCount}/{results.length}
               </div>
               <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Câu đúng</div>
@@ -439,7 +453,7 @@ export default function QuizPage() {
                   <div style={{ fontSize: '13px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>
                     Gõ từ tiếng Anh
                   </div>
-                  <div style={{ fontSize: '28px', fontWeight: 600, color: 'var(--accent)' }}>
+                  <div style={{ fontSize: '28px', fontWeight: 600, color: 'var(--accent)', whiteSpace: 'pre-wrap' }}>
                     {currentQ.word.meaning}
                   </div>
                   <div style={{ fontSize: '14px', color: 'var(--text-tertiary)', marginTop: '8px' }}>
@@ -592,6 +606,7 @@ export default function QuizPage() {
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
+                          whiteSpace: 'pre-wrap',
                         }}
                       >
                         {opt}

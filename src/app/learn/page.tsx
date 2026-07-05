@@ -13,6 +13,7 @@ import Link from 'next/link';
 import { useReviews } from '@/hooks/use-reviews';
 import { useTTS } from '@/hooks/use-tts';
 import { RATING_OPTIONS } from '@/lib/constants';
+import { calculateSM2, getIntervalLabel } from '@/lib/sm2';
 import type { WordWithReview, Rating, SessionResult } from '@/types';
 
 type SessionState = 'loading' | 'pre' | 'active' | 'done';
@@ -63,6 +64,45 @@ export default function LearnPage() {
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
   };
+
+  // Calculate predicted intervals for current word
+  const getPreviewIntervals = () => {
+    if (!currentWord?.reviews) return {};
+    const { ease_factor, interval_days, repetitions } = currentWord.reviews;
+    const previews: Record<number, string> = {};
+    for (const opt of RATING_OPTIONS) {
+      const result = calculateSM2({
+        quality: opt.rating,
+        easeFactor: ease_factor,
+        interval: interval_days,
+        repetitions,
+      });
+      previews[opt.rating] = getIntervalLabel(result.interval);
+    }
+    return previews;
+  };
+  const intervalPreviews = state === 'active' && isFlipped ? getPreviewIntervals() : {};
+
+  // Keyboard shortcuts: Space=flip, 1-4=rate
+  useEffect(() => {
+    if (state !== 'active') return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (e.code === 'Space') {
+        e.preventDefault();
+        handleFlip();
+      }
+      if (isFlipped && !isSubmitting) {
+        if (e.key === '1') handleRate(0 as Rating);
+        if (e.key === '2') handleRate(3 as Rating);
+        if (e.key === '3') handleRate(4 as Rating);
+        if (e.key === '4') handleRate(5 as Rating);
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state, isFlipped, isSubmitting, currentWord]);
 
   const handleRate = async (rating: Rating) => {
     if (!currentWord || !currentWord.reviews || isSubmitting) return;
@@ -234,8 +274,9 @@ export default function LearnPage() {
                 <div
                   style={{
                     fontSize: '28px',
-                    fontWeight: 700,
+                    fontWeight: 500,
                     color: 'var(--accent)',
+                    fontFamily: 'var(--font-mono)',
                   }}
                 >
                   {newCount}
@@ -259,8 +300,9 @@ export default function LearnPage() {
                 <div
                   style={{
                     fontSize: '28px',
-                    fontWeight: 700,
+                    fontWeight: 500,
                     color: 'var(--rating-good)',
+                    fontFamily: 'var(--font-mono)',
                   }}
                 >
                   {reviewCount}
@@ -355,8 +397,9 @@ export default function LearnPage() {
               <div
                 style={{
                   fontSize: '28px',
-                  fontWeight: 700,
+                  fontWeight: 500,
                   color: 'var(--rating-good)',
+                  fontFamily: 'var(--font-mono)',
                 }}
               >
                 {accuracy}%
@@ -371,8 +414,9 @@ export default function LearnPage() {
               <div
                 style={{
                   fontSize: '28px',
-                  fontWeight: 700,
+                  fontWeight: 500,
                   color: 'var(--accent)',
+                  fontFamily: 'var(--font-mono)',
                 }}
               >
                 {results.length}
@@ -425,7 +469,7 @@ export default function LearnPage() {
             marginBottom: '8px',
           }}
         >
-          <Link href="/" className="btn-icon" style={{ width: '32px', height: '32px' }}>
+          <Link href="/" className="btn-icon" aria-label="Quay lại trang chủ" style={{ width: '32px', height: '32px' }}>
             <ArrowLeft size={18} />
           </Link>
           <span
@@ -528,6 +572,7 @@ export default function LearnPage() {
                         playWord(currentWord.word);
                       }}
                       className="btn-icon"
+                      aria-label="Phát âm từ"
                       style={{
                         width: '48px',
                         height: '48px',
@@ -547,7 +592,7 @@ export default function LearnPage() {
                         marginTop: '16px',
                       }}
                     >
-                      Chạm để lật thẻ
+                      Lật thẻ · Space
                     </span>
                   </div>
                 </div>
@@ -580,6 +625,7 @@ export default function LearnPage() {
                           fontSize: '18px',
                           color: 'var(--accent)',
                           fontWeight: 600,
+                          whiteSpace: 'pre-wrap',
                         }}
                       >
                         {currentWord.meaning}
@@ -651,7 +697,7 @@ export default function LearnPage() {
                       ? 'var(--rating-good-bg)'
                       : 'var(--rating-easy-bg)',
                   border: 'none',
-                  borderRadius: 'var(--radius-md)',
+                  borderRadius: 'var(--radius-xl)',
                   cursor: isSubmitting ? 'wait' : 'pointer',
                   transition: 'all 0.2s ease',
                   opacity: isSubmitting ? 0.6 : 1,
@@ -674,6 +720,17 @@ export default function LearnPage() {
                 >
                   {opt.label}
                 </span>
+                {intervalPreviews[opt.rating] && (
+                  <span
+                    style={{
+                      fontSize: '10px',
+                      color: 'var(--text-tertiary)',
+                      fontFamily: 'var(--font-mono)',
+                    }}
+                  >
+                    {intervalPreviews[opt.rating]}
+                  </span>
+                )}
               </motion.button>
             ))}
           </motion.div>
@@ -712,6 +769,7 @@ function BackDetail({
           marginTop: '2px',
           fontStyle: italic ? 'italic' : 'normal',
           lineHeight: 1.5,
+          whiteSpace: 'pre-wrap',
         }}
       >
         {value}

@@ -434,6 +434,7 @@ function WordCard({
             onFavorite();
           }}
           className="btn-icon"
+          aria-label={word.favorite ? 'Bỏ yêu thích' : 'Yêu thích'}
           style={{ flexShrink: 0, width: '36px', height: '36px' }}
         >
           <Star
@@ -475,12 +476,14 @@ function WordCard({
                       onSpeak();
                     }}
                     className="btn-icon"
+                    aria-label="Phát âm từ"
                     style={{ width: '28px', height: '28px' }}
                   >
                     <Volume2 size={14} />
                   </button>
                 </div>
               )}
+              <DetailRow label="Nghĩa" value={word.meaning} />
               {word.phrase && (
                 <DetailRow label="Cụm từ" value={word.phrase} />
               )}
@@ -557,6 +560,7 @@ function DetailRow({ label, value }: { label: string; value: string }) {
           fontSize: '14px',
           color: 'var(--text-primary)',
           marginTop: '2px',
+          whiteSpace: 'pre-wrap',
         }}
       >
         {value}

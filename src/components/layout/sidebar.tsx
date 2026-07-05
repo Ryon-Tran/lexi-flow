@@ -53,7 +53,7 @@ export function Sidebar() {
           style={{
             width: '36px',
             height: '36px',
-            borderRadius: 'var(--radius-md)',
+            borderRadius: 'var(--radius-full)',
             background: 'linear-gradient(135deg, var(--accent), #5856D6)',
             display: 'flex',
             alignItems: 'center',
@@ -108,7 +108,7 @@ export function Sidebar() {
                   alignItems: 'center',
                   gap: '10px',
                   padding: '10px 12px',
-                  borderRadius: 'var(--radius-md)',
+                  borderRadius: 'var(--radius-pill)',
                   color: isActive
                     ? 'var(--accent)'
                     : 'var(--text-secondary)',
@@ -136,17 +136,9 @@ export function Sidebar() {
           borderTop: '1px solid var(--border)',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          justifyContent: 'flex-end',
         }}
       >
-        <span
-          style={{
-            fontSize: '12px',
-            color: 'var(--text-tertiary)',
-          }}
-        >
-          v1.0 MVP
-        </span>
         <ThemeToggle />
       </div>
     </aside>

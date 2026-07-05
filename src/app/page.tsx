@@ -92,7 +92,7 @@ export default function DashboardPage() {
               style={{
                 width: '32px',
                 height: '32px',
-                borderRadius: 'var(--radius-md)',
+                borderRadius: 'var(--radius-full)',
                 background: 'var(--accent-light)',
                 display: 'flex',
                 alignItems: 'center',
@@ -106,9 +106,10 @@ export default function DashboardPage() {
           <div
             style={{
               fontSize: '24px',
-              fontWeight: 700,
+              fontWeight: 500,
               color: 'var(--text-primary)',
-              letterSpacing: '-1px',
+              letterSpacing: '-0.5px',
+              fontFamily: 'var(--font-mono)',
             }}
           >
             {loading ? '—' : stats?.totalWords || 0}
@@ -137,7 +138,7 @@ export default function DashboardPage() {
               style={{
                 width: '32px',
                 height: '32px',
-                borderRadius: 'var(--radius-md)',
+                borderRadius: 'var(--radius-full)',
                 background: 'var(--rating-good-bg)',
                 display: 'flex',
                 alignItems: 'center',
@@ -151,9 +152,10 @@ export default function DashboardPage() {
           <div
             style={{
               fontSize: '24px',
-              fontWeight: 700,
+              fontWeight: 500,
               color: 'var(--text-primary)',
-              letterSpacing: '-1px',
+              letterSpacing: '-0.5px',
+              fontFamily: 'var(--font-mono)',
             }}
           >
             {loading ? '—' : stats?.memorized || 0}
@@ -182,7 +184,7 @@ export default function DashboardPage() {
               style={{
                 width: '32px',
                 height: '32px',
-                borderRadius: 'var(--radius-md)',
+                borderRadius: 'var(--radius-full)',
                 background: 'var(--rating-hard-bg)',
                 display: 'flex',
                 alignItems: 'center',
@@ -196,9 +198,10 @@ export default function DashboardPage() {
           <div
             style={{
               fontSize: '24px',
-              fontWeight: 700,
+              fontWeight: 500,
               color: 'var(--text-primary)',
-              letterSpacing: '-1px',
+              letterSpacing: '-0.5px',
+              fontFamily: 'var(--font-mono)',
             }}
           >
             {loading ? '—' : stats?.dueToday || 0}
@@ -227,7 +230,7 @@ export default function DashboardPage() {
               style={{
                 width: '32px',
                 height: '32px',
-                borderRadius: 'var(--radius-md)',
+                borderRadius: 'var(--radius-full)',
                 background: 'var(--rating-forgot-bg)',
                 display: 'flex',
                 alignItems: 'center',
@@ -241,9 +244,10 @@ export default function DashboardPage() {
           <div
             style={{
               fontSize: '24px',
-              fontWeight: 700,
+              fontWeight: 500,
               color: 'var(--text-primary)',
-              letterSpacing: '-1px',
+              letterSpacing: '-0.5px',
+              fontFamily: 'var(--font-mono)',
             }}
           >
             {loading ? '—' : stats?.streak || 0}
@@ -295,7 +299,7 @@ export default function DashboardPage() {
                   gap: '14px',
                   padding: '16px',
                   background: 'var(--accent)',
-                  borderRadius: 'var(--radius-lg)',
+                  borderRadius: 'var(--radius-xl)',
                   color: 'white',
                   cursor: 'pointer',
                 }}
@@ -304,7 +308,7 @@ export default function DashboardPage() {
                   style={{
                     width: '40px',
                     height: '40px',
-                    borderRadius: 'var(--radius-md)',
+                    borderRadius: 'var(--radius-full)',
                     background: 'rgba(255,255,255,0.2)',
                     display: 'flex',
                     alignItems: 'center',
@@ -321,6 +325,7 @@ export default function DashboardPage() {
                     style={{
                       fontSize: '13px',
                       opacity: 0.8,
+                      fontFamily: 'var(--font-mono)',
                     }}
                   >
                     {stats.dueToday} từ đang chờ
@@ -347,7 +352,7 @@ export default function DashboardPage() {
                 style={{
                   width: '40px',
                   height: '40px',
-                  borderRadius: 'var(--radius-md)',
+                  borderRadius: 'var(--radius-full)',
                   background: 'var(--rating-good-bg)',
                   display: 'flex',
                   alignItems: 'center',
@@ -396,7 +401,7 @@ export default function DashboardPage() {
                 style={{
                   width: '40px',
                   height: '40px',
-                  borderRadius: 'var(--radius-md)',
+                  borderRadius: 'var(--radius-full)',
                   background: 'var(--rating-easy-bg)',
                   display: 'flex',
                   alignItems: 'center',
@@ -445,7 +450,7 @@ export default function DashboardPage() {
                 style={{
                   width: '40px',
                   height: '40px',
-                  borderRadius: 'var(--radius-md)',
+                  borderRadius: 'var(--radius-full)',
                   background: 'var(--accent-light)',
                   display: 'flex',
                   alignItems: 'center',
@@ -494,7 +499,7 @@ export default function DashboardPage() {
                 style={{
                   width: '40px',
                   height: '40px',
-                  borderRadius: 'var(--radius-md)',
+                  borderRadius: 'var(--radius-full)',
                   background: 'var(--rating-hard-bg)',
                   display: 'flex',
                   alignItems: 'center',
