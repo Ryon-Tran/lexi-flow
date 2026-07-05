@@ -108,17 +108,23 @@ export function useWords() {
     if (!supabase) throw new Error('Supabase chưa được cấu hình');
 
     try {
-      const { error: err } = await supabase
+      const { data, error: err } = await supabase
         .from('words')
         .delete()
-        .eq('id', id);
+        .eq('id', id)
+        .select();
 
       if (err) throw err;
+      if (!data || data.length === 0) {
+        throw new Error(
+          'Không thể xoá từ vựng trên cơ sở dữ liệu (Có thể do chính sách RLS chưa cho phép DELETE hoặc từ không tồn tại).'
+        );
+      }
       setWords((prev) => prev.filter((w) => w.id !== id));
     } catch (err) {
-      throw new Error(
-        err instanceof Error ? err.message : 'Failed to delete word'
-      );
+      const msg = err instanceof Error ? err.message : 'Failed to delete word';
+      setError(msg);
+      throw new Error(msg);
     }
   };
 

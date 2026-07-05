@@ -27,6 +27,15 @@ export default function WordsPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [toast, setToast] = useState<{
+    message: string;
+    type: 'success' | 'error';
+  } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 4000);
+  };
 
   const filteredWords = useMemo(() => {
     let result = [...words];
@@ -70,8 +79,13 @@ export default function WordsPage() {
     try {
       await deleteWord(id);
       setDeleteConfirm(null);
-    } catch {
-      // Error handled in hook
+      showToast('Đã xoá từ vựng thành công!', 'success');
+    } catch (err) {
+      setDeleteConfirm(null);
+      showToast(
+        err instanceof Error ? err.message : 'Không thể xoá từ vựng',
+        'error'
+      );
     }
   };
 
@@ -321,6 +335,21 @@ export default function WordsPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Toast */}
+      {toast && (
+        <div
+          className="toast"
+          style={{
+            background:
+              toast.type === 'success'
+                ? 'var(--rating-good)'
+                : 'var(--rating-forgot)',
+          }}
+        >
+          {toast.message}
+        </div>
+      )}
     </div>
   );
 }
