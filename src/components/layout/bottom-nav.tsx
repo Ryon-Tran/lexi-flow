@@ -7,8 +7,7 @@ import { Home, BookOpen, GraduationCap, Plus } from 'lucide-react';
 const navItems = [
   { href: '/', label: 'Trang chủ', icon: Home },
   { href: '/words', label: 'Từ vựng', icon: BookOpen },
-  { href: '/learn', label: 'Học', icon: GraduationCap },
-  { href: '/add-word', label: 'Thêm', icon: Plus },
+  { href: '/practice', label: 'Học tập', icon: GraduationCap },
 ];
 
 export function BottomNav() {

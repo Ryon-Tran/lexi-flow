@@ -336,54 +336,7 @@ export default function DashboardPage() {
             </Link>
           )}
 
-          <Link href="/add-word" style={{ textDecoration: 'none' }}>
-            <motion.div
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-              className="glass-card"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '14px',
-                padding: '16px',
-                cursor: 'pointer',
-              }}
-            >
-              <div
-                style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: 'var(--radius-full)',
-                  background: 'var(--rating-good-bg)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'var(--rating-good)',
-                }}
-              >
-                <Plus size={20} />
-              </div>
-              <div>
-                <div
-                  style={{
-                    fontWeight: 600,
-                    fontSize: '15px',
-                    color: 'var(--text-primary)',
-                  }}
-                >
-                  Thêm từ mới
-                </div>
-                <div
-                  style={{
-                    fontSize: '13px',
-                    color: 'var(--text-secondary)',
-                  }}
-                >
-                  Nhập từ vựng thủ công
-                </div>
-              </div>
-            </motion.div>
-          </Link>
+
           <Link href="/practice" style={{ textDecoration: 'none' }}>
             <motion.div
               whileHover={{ scale: 1.01 }}
@@ -421,7 +374,7 @@ export default function DashboardPage() {
                     color: 'var(--text-primary)',
                   }}
                 >
-                  Luyện tập chuyên sâu
+                  Học tập & Luyện tập
                 </div>
                 <div
                   style={{
@@ -429,158 +382,13 @@ export default function DashboardPage() {
                     color: 'var(--text-secondary)',
                   }}
                 >
-                  Các chế độ luyện điền từ, ghép từ, nghe chính tả...
+                  Flashcards, Quiz, và các trò chơi ôn tập...
                 </div>
               </div>
             </motion.div>
           </Link>
 
-          <Link href="/quiz" style={{ textDecoration: 'none' }}>
-            <motion.div
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-              className="glass-card"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '14px',
-                padding: '16px',
-                cursor: 'pointer',
-              }}
-            >
-              <div
-                style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: 'var(--radius-full)',
-                  background: 'var(--rating-easy-bg)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'var(--rating-easy)',
-                }}
-              >
-                <Target size={20} />
-              </div>
-              <div>
-                <div
-                  style={{
-                    fontWeight: 600,
-                    fontSize: '15px',
-                    color: 'var(--text-primary)',
-                  }}
-                >
-                  Kiểm tra (Quiz)
-                </div>
-                <div
-                  style={{
-                    fontSize: '13px',
-                    color: 'var(--text-secondary)',
-                  }}
-                >
-                  Làm bài test đánh giá trí nhớ
-                </div>
-              </div>
-            </motion.div>
-          </Link>
 
-          <Link href="/import" style={{ textDecoration: 'none' }}>
-            <motion.div
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-              className="glass-card"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '14px',
-                padding: '16px',
-                cursor: 'pointer',
-              }}
-            >
-              <div
-                style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: 'var(--radius-full)',
-                  background: 'var(--accent-light)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'var(--accent)',
-                }}
-              >
-                <Upload size={20} />
-              </div>
-              <div>
-                <div
-                  style={{
-                    fontWeight: 600,
-                    fontSize: '15px',
-                    color: 'var(--text-primary)',
-                  }}
-                >
-                  Import Excel
-                </div>
-                <div
-                  style={{
-                    fontSize: '13px',
-                    color: 'var(--text-secondary)',
-                  }}
-                >
-                  Nhập hàng loạt từ file .xlsx
-                </div>
-              </div>
-            </motion.div>
-          </Link>
-
-          <Link href="/words" style={{ textDecoration: 'none' }}>
-            <motion.div
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-              className="glass-card"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '14px',
-                padding: '16px',
-                cursor: 'pointer',
-              }}
-            >
-              <div
-                style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: 'var(--radius-full)',
-                  background: 'var(--rating-hard-bg)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'var(--rating-hard)',
-                }}
-              >
-                <BookOpen size={20} />
-              </div>
-              <div>
-                <div
-                  style={{
-                    fontWeight: 600,
-                    fontSize: '15px',
-                    color: 'var(--text-primary)',
-                  }}
-                >
-                  Danh sách từ
-                </div>
-                <div
-                  style={{
-                    fontSize: '13px',
-                    color: 'var(--text-secondary)',
-                  }}
-                >
-                  Xem và quản lý từ vựng
-                </div>
-              </div>
-            </motion.div>
-          </Link>
         </div>
       </motion.div>
     </div>

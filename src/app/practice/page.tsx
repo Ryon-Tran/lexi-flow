@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ArrowLeft, BookOpen, Layers, Edit3, Grid, Award, Headphones, HelpCircle } from 'lucide-react';
+import { ArrowLeft, BookOpen, Layers, Edit3, Grid, Award, Headphones, HelpCircle, Target } from 'lucide-react';
 import Link from 'next/link';
 import { LEARNING_MODES } from '@/lib/learning-config';
 
@@ -36,6 +36,8 @@ export default function PracticeHubPage() {
         return <Headphones size={22} />;
       case 'letter_hint':
         return <HelpCircle size={22} />;
+      case 'quiz':
+        return <Target size={22} />;
       default:
         return <BookOpen size={22} />;
     }
@@ -76,10 +78,10 @@ export default function PracticeHubPage() {
         </Link>
         <div>
           <h1 className="page-title" style={{ marginBottom: '2px' }}>
-            Luyện tập chuyên sâu
+            Học tập & Luyện tập
           </h1>
           <p className="page-subtitle" style={{ marginBottom: 0 }}>
-            Chọn phương pháp học phù hợp để rèn luyện ghi nhớ từ vựng TOEIC
+            Tất cả các phương pháp ghi nhớ từ vựng tại một nơi
           </p>
         </div>
       </div>

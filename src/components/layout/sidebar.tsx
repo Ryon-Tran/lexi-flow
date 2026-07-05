@@ -15,9 +15,7 @@ import { ThemeToggle } from './theme-provider';
 const navItems = [
   { href: '/', label: 'Dashboard', icon: Home },
   { href: '/words', label: 'Từ vựng', icon: BookOpen },
-  { href: '/learn', label: 'Học từ', icon: GraduationCap },
-  { href: '/add-word', label: 'Thêm từ mới', icon: Plus },
-  { href: '/import', label: 'Import Excel', icon: Upload },
+  { href: '/practice', label: 'Học tập', icon: GraduationCap },
 ];
 
 export function Sidebar() {

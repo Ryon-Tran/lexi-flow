@@ -10,7 +10,10 @@ import {
   ChevronDown,
   X,
   BookOpen,
+  Plus,
+  Upload,
 } from 'lucide-react';
+import Link from 'next/link';
 import { useWords } from '@/hooks/use-words';
 import { useTTS } from '@/hooks/use-tts';
 import { TOPIC_OPTIONS } from '@/lib/constants';
@@ -98,11 +101,21 @@ export default function WordsPage() {
   return (
     <div className="page-container">
       {/* Header */}
-      <div style={{ marginBottom: '20px' }}>
-        <h1 className="page-title">Từ vựng</h1>
-        <p className="page-subtitle">
-          {words.length} từ trong bộ sưu tập
-        </p>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+        <div>
+          <h1 className="page-title" style={{ marginBottom: '4px' }}>Từ vựng</h1>
+          <p className="page-subtitle" style={{ marginBottom: 0 }}>
+            {words.length} từ trong bộ sưu tập
+          </p>
+        </div>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <Link href="/import" className="btn-secondary" style={{ padding: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Import Excel">
+            <Upload size={18} />
+          </Link>
+          <Link href="/add-word" className="btn-primary" style={{ padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Plus size={18} /> <span className="hide-mobile">Thêm từ</span>
+          </Link>
+        </div>
       </div>
 
       {/* Search */}

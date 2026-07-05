@@ -68,6 +68,15 @@ export const LEARNING_MODES: LearningModeConfig[] = [
     path: '/practice/letter-hint',
     difficulty: 'easy',
   },
+  {
+    id: 'quiz',
+    name: 'Memory Quiz',
+    vietnameseName: 'Kiểm tra trí nhớ',
+    description: 'Làm bài kiểm tra trắc nghiệm để đánh giá tổng hợp khả năng nhớ từ.',
+    enabled: true,
+    path: '/quiz',
+    difficulty: 'medium',
+  },
 ];
 
 /** Spaced Repetition Scheduling Config */
