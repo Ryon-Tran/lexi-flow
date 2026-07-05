@@ -1,85 +1,110 @@
 'use client';
 
-import { useState, useEffect, useRef, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft,
   CheckCircle2,
   XCircle,
-  Target,
   ArrowRight,
   RotateCcw,
+  Volume2,
+  Flame,
+  Shuffle,
   Keyboard,
   ListOrdered,
   Headphones,
-  Flame,
-  Volume2,
+  Edit3,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useWords } from '@/hooks/use-words';
 import { useTTS } from '@/hooks/use-tts';
 import type { Word } from '@/types';
 
-type QuizMode = 'multiple_choice' | 'typing' | 'listening';
+type QuestionType = 'fill_blank' | 'letter_hint' | 'dictation' | 'multiple_choice';
 
-interface QuizQuestion {
+interface MixedQuestion {
   word: Word;
-  options: string[]; // only relevant for multiple_choice and listening
+  type: QuestionType;
+  options?: string[]; // For multiple choice
+  hint?: string; // For letter hint
+  blankSentence?: string; // For fill blank
 }
 
-interface QuizResult {
-  question: QuizQuestion;
+interface MixedResult {
+  question: MixedQuestion;
   isCorrect: boolean;
   userAnswer: string;
 }
 
-type QuizState = 'loading' | 'select_mode' | 'active' | 'feedback' | 'done';
+type SessionState = 'loading' | 'active' | 'feedback' | 'done';
 
-const QUIZ_LIMIT = 20;
+const MIXED_LIMIT = 20;
 
-function QuizContent() {
+export default function MixedPracticePage() {
   const { words, loading } = useWords();
   const { playWord } = useTTS();
-  const searchParams = useSearchParams();
-  const queryMode = searchParams.get('mode') as QuizMode | null;
 
-  const [state, setState] = useState<QuizState>('loading');
-  const [mode, setMode] = useState<QuizMode>('multiple_choice');
-  const [questions, setQuestions] = useState<QuizQuestion[]>([]);
+  const [state, setState] = useState<SessionState>('loading');
+  const [questions, setQuestions] = useState<MixedQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [results, setResults] = useState<QuizResult[]>([]);
+  const [results, setResults] = useState<MixedResult[]>([]);
   const [userAnswer, setUserAnswer] = useState('');
   
-  // Gamification states
   const [streak, setStreak] = useState(0);
   const [isShaking, setIsShaking] = useState(false);
   
   const inputRef = useRef<HTMLInputElement>(null);
 
-
-
-  const startQuiz = (selectedMode: QuizMode) => {
-    setMode(selectedMode);
-    
-    // Pick random words
+  // Generate Questions
+  const startSession = () => {
     const available = [...words].sort(() => Math.random() - 0.5);
-    const selected = available.slice(0, Math.min(QUIZ_LIMIT, available.length));
+    const selected = available.slice(0, Math.min(MIXED_LIMIT, available.length));
 
-    // Generate questions
-    const generated: QuizQuestion[] = selected.map((word) => {
+    const generated: MixedQuestion[] = selected.map((word) => {
+      // Determine possible types for this word
+      const possibleTypes: QuestionType[] = ['letter_hint', 'dictation', 'multiple_choice'];
+      if (word.example && word.example.toLowerCase().includes(word.word.toLowerCase())) {
+        possibleTypes.push('fill_blank');
+      }
+
+      // Randomly pick one type
+      const type = possibleTypes[Math.floor(Math.random() * possibleTypes.length)];
+
       let options: string[] = [];
-      if (selectedMode !== 'typing') {
+      let hint = '';
+      let blankSentence = '';
+
+      if (type === 'multiple_choice') {
         const wrongWords = [...words]
           .filter((w) => w.id !== word.id && w.meaning !== word.meaning)
           .sort(() => Math.random() - 0.5)
           .slice(0, 3);
-        
         options = [word.meaning, ...wrongWords.map((w) => w.meaning)].sort(
           () => Math.random() - 0.5
         );
+      } else if (type === 'letter_hint') {
+        const chars = word.word.split('');
+        const length = chars.length;
+        if (length <= 2) {
+          hint = '_ '.repeat(length).trim();
+        } else {
+          const showCount = Math.max(1, Math.floor(length * 0.3));
+          const indicesToShow: number[] = [];
+          while (indicesToShow.length < showCount) {
+            const idx = Math.floor(Math.random() * length);
+            if (!indicesToShow.includes(idx) && chars[idx] !== ' ') {
+              indicesToShow.push(idx);
+            }
+          }
+          hint = chars.map((c, i) => (indicesToShow.includes(i) || c === ' ' ? c : '_')).join(' ');
+        }
+      } else if (type === 'fill_blank' && word.example) {
+        const regex = new RegExp(`\\b${word.word}\\b`, 'gi');
+        blankSentence = word.example.replace(regex, '_________');
       }
-      return { word, options };
+
+      return { word, type, options, hint, blankSentence };
     });
 
     setQuestions(generated);
@@ -92,41 +117,31 @@ function QuizContent() {
 
   useEffect(() => {
     if (!loading && state === 'loading') {
-      const timer = setTimeout(() => {
-        if (queryMode && ['multiple_choice', 'typing', 'listening'].includes(queryMode)) {
-          if (words.length >= 4) {
-            startQuiz(queryMode);
-          } else {
-            setState('select_mode');
-          }
-        } else {
-          setState('select_mode');
-        }
-      }, 0);
-      return () => clearTimeout(timer);
+      if (words.length < 4) {
+        setState('done'); // Hack to show empty state (handled below)
+      } else {
+        setTimeout(() => startSession(), 0);
+      }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loading, state, queryMode]);
+  }, [loading, state]);
 
-  // Auto-play TTS when starting a listening question
+  // Focus input for typing modes
   useEffect(() => {
-    if (state === 'active' && mode === 'listening' && questions[currentIndex]) {
-      // Slight delay so the user is ready
-      const timer = setTimeout(() => {
-        playWord(questions[currentIndex].word.word);
-      }, 300);
-      return () => clearTimeout(timer);
+    if (state === 'active' && questions[currentIndex]) {
+      const type = questions[currentIndex].type;
+      if (type !== 'multiple_choice') {
+        setTimeout(() => {
+          inputRef.current?.focus();
+        }, 100);
+      }
+      
+      // Auto-play dictation
+      if (type === 'dictation') {
+        setTimeout(() => playWord(questions[currentIndex].word.word), 300);
+      }
     }
-  }, [state, currentIndex, mode, questions, playWord]);
-
-  // Focus input for typing mode
-  useEffect(() => {
-    if (state === 'active' && mode === 'typing') {
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 100);
-    }
-  }, [state, currentIndex, mode]);
+  }, [state, currentIndex, questions, playWord]);
 
   const handleAnswer = (answer: string) => {
     if (state !== 'active') return;
@@ -135,10 +150,10 @@ function QuizContent() {
     setUserAnswer(answer);
     
     let isCorrect = false;
-    if (mode === 'typing') {
-      isCorrect = answer.trim().toLowerCase() === question.word.word.toLowerCase();
-    } else {
+    if (question.type === 'multiple_choice') {
       isCorrect = answer === question.word.meaning;
+    } else {
+      isCorrect = answer.trim().toLowerCase() === question.word.word.toLowerCase();
     }
 
     setResults((prev) => [
@@ -148,13 +163,11 @@ function QuizContent() {
     
     if (isCorrect) {
       setStreak((s) => s + 1);
-      // Play TTS for reinforcement on correct answer (if not listening mode since they just heard it)
-      if (mode !== 'listening') {
+      if (question.type !== 'dictation') {
         playWord(question.word.word);
       }
     } else {
       setStreak(0);
-      // Trigger shake animation
       setIsShaking(true);
       setTimeout(() => setIsShaking(false), 500);
     }
@@ -187,7 +200,7 @@ function QuizContent() {
   }, [state, currentIndex, questions.length]);
 
   // ========================
-  // Loading State
+  // Empty & Loading State
   // ========================
   if (state === 'loading') {
     return (
@@ -197,124 +210,28 @@ function QuizContent() {
     );
   }
 
-  // ========================
-  // Select Mode Screen
-  // ========================
-  if (state === 'select_mode') {
+  if (state === 'done' && words.length < 4) {
     return (
       <div className="page-container">
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
-          <Link href="/" className="btn-icon">
+          <Link href="/practice" className="btn-icon">
             <ArrowLeft size={20} />
           </Link>
-          <h1 className="page-title" style={{ marginBottom: 0 }}>
-            Kiểm tra
-          </h1>
+          <h1 className="page-title" style={{ marginBottom: 0 }}>Thử thách hỗn hợp</h1>
         </div>
 
-        {words.length < 4 ? (
-          <div className="empty-state" style={{ minHeight: '50vh' }}>
-            <Target size={64} style={{ color: 'var(--text-tertiary)', opacity: 0.6 }} />
-            <h3 style={{ fontSize: '20px', fontWeight: 600, color: 'var(--text-primary)', marginTop: '16px' }}>
-              Chưa đủ từ vựng
-            </h3>
-            <p style={{ fontSize: '15px', color: 'var(--text-secondary)', marginTop: '8px' }}>
-              Bạn cần ít nhất 4 từ vựng trong bộ sưu tập để có thể làm bài kiểm tra.
-            </p>
-            <Link href="/add-word" className="btn-primary" style={{ marginTop: '24px' }}>
-              Thêm từ ngay
-            </Link>
-          </div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <p style={{ fontSize: '15px', color: 'var(--text-secondary)', marginBottom: '24px' }}>
-              Chọn chế độ kiểm tra mà bạn muốn luyện tập:
-            </p>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {/* Trắc nghiệm */}
-              <motion.button
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
-                onClick={() => startQuiz('multiple_choice')}
-                className="glass-card"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '16px',
-                  padding: '20px',
-                  width: '100%',
-                  textAlign: 'left',
-                  border: '1px solid var(--rating-easy)',
-                  background: 'var(--rating-easy-bg)',
-                }}
-              >
-                <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-full)', background: 'var(--rating-easy)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <ListOrdered size={24} />
-                </div>
-                <div>
-                  <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)' }}>Trắc nghiệm (Đọc hiểu)</div>
-                  <div style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Đọc từ tiếng Anh, chọn nghĩa tiếng Việt</div>
-                </div>
-              </motion.button>
-
-              {/* Gõ từ */}
-              <motion.button
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
-                onClick={() => startQuiz('typing')}
-                className="glass-card"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '16px',
-                  padding: '20px',
-                  width: '100%',
-                  textAlign: 'left',
-                  border: '1px solid var(--rating-hard)',
-                  background: 'var(--rating-hard-bg)',
-                }}
-              >
-                <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-full)', background: 'var(--rating-hard)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Keyboard size={24} />
-                </div>
-                <div>
-                  <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)' }}>Gõ từ (Chính tả)</div>
-                  <div style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Nhìn nghĩa tiếng Việt, gõ lại từ tiếng Anh</div>
-                </div>
-              </motion.button>
-
-              {/* Luyện nghe */}
-              <motion.button
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
-                onClick={() => startQuiz('listening')}
-                className="glass-card"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '16px',
-                  padding: '20px',
-                  width: '100%',
-                  textAlign: 'left',
-                  border: '1px solid var(--accent)',
-                  background: 'var(--accent-light)',
-                }}
-              >
-                <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-full)', background: 'var(--accent)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Headphones size={24} />
-                </div>
-                <div>
-                  <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)' }}>Luyện nghe (Nghe hiểu)</div>
-                  <div style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Nghe phát âm, chọn nghĩa tiếng Việt đúng</div>
-                </div>
-              </motion.button>
-            </div>
-          </motion.div>
-        )}
+        <div className="empty-state" style={{ minHeight: '50vh' }}>
+          <Shuffle size={64} style={{ color: 'var(--text-tertiary)', opacity: 0.6 }} />
+          <h3 style={{ fontSize: '20px', fontWeight: 600, color: 'var(--text-primary)', marginTop: '16px' }}>
+            Chưa đủ từ vựng
+          </h3>
+          <p style={{ fontSize: '15px', color: 'var(--text-secondary)', marginTop: '8px' }}>
+            Bạn cần ít nhất 4 từ vựng trong bộ sưu tập để luyện tập.
+          </p>
+          <Link href="/add-word" className="btn-primary" style={{ marginTop: '24px' }}>
+            Thêm từ ngay
+          </Link>
+        </div>
       </div>
     );
   }
@@ -356,10 +273,10 @@ function QuizContent() {
           </div>
 
           <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginBottom: '40px' }}>
-            <button onClick={() => setState('select_mode')} className="btn-secondary">
-              Đổi chế độ
-            </button>
-            <button onClick={() => startQuiz(mode)} className="btn-primary">
+            <Link href="/practice" className="btn-secondary">
+              Về danh sách
+            </Link>
+            <button onClick={startSession} className="btn-primary">
               <RotateCcw size={16} /> Làm lại
             </button>
           </div>
@@ -382,7 +299,7 @@ function QuizContent() {
                       </button>
                     </div>
                     <div style={{ fontSize: '14px', color: 'var(--rating-good)', marginTop: '4px' }}>
-                      Đáp án đúng: {mode === 'typing' ? r.question.word.word : r.question.word.meaning}
+                      Đáp án đúng: {r.question.type === 'multiple_choice' ? r.question.word.meaning : r.question.word.word}
                     </div>
                     <div style={{ fontSize: '13px', color: 'var(--rating-forgot)', marginTop: '4px' }}>
                       Bạn đã chọn/gõ: {r.userAnswer || '(trống)'}
@@ -406,6 +323,17 @@ function QuizContent() {
   const progress = ((currentIndex + (state === 'feedback' ? 1 : 0)) / questions.length) * 100;
   const currentResult = results.find(r => r.question.word.id === currentQ.word.id);
 
+  // Helper to render mode icon & title
+  const getModeInfo = (type: QuestionType) => {
+    switch (type) {
+      case 'multiple_choice': return { icon: <ListOrdered size={16} />, title: 'Trắc nghiệm' };
+      case 'fill_blank': return { icon: <Edit3 size={16} />, title: 'Điền vào chỗ trống' };
+      case 'dictation': return { icon: <Headphones size={16} />, title: 'Nghe chính tả' };
+      case 'letter_hint': return { icon: <Keyboard size={16} />, title: 'Điền từ theo gợi ý' };
+    }
+  };
+  const modeInfo = getModeInfo(currentQ.type);
+
   return (
     <div className="page-container" style={{ display: 'flex', flexDirection: 'column', minHeight: 'calc(100dvh - var(--nav-height))' }}>
       
@@ -413,9 +341,9 @@ function QuizContent() {
       <div style={{ marginBottom: '24px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <button onClick={() => setState('select_mode')} className="btn-icon" style={{ width: '32px', height: '32px' }}>
+            <Link href="/practice" className="btn-icon" style={{ width: '32px', height: '32px' }}>
               <XCircle size={18} />
-            </button>
+            </Link>
             <span style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 500 }}>
               Câu {currentIndex + 1} / {questions.length}
             </span>
@@ -446,7 +374,19 @@ function QuizContent() {
         </div>
       </div>
 
-      {/* Question Area (Shake animated) */}
+      {/* Mode Indicator */}
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
+        <div style={{ 
+          display: 'inline-flex', alignItems: 'center', gap: '6px', 
+          background: 'var(--bg-secondary)', padding: '6px 12px', 
+          borderRadius: 'var(--radius-pill)', color: 'var(--text-secondary)',
+          fontSize: '12px', fontWeight: 600, textTransform: 'uppercase'
+        }}>
+          {modeInfo.icon} {modeInfo.title}
+        </div>
+      </div>
+
+      {/* Question Area */}
       <motion.div 
         animate={isShaking ? { x: [-10, 10, -10, 10, 0] } : {}}
         transition={{ duration: 0.4 }}
@@ -460,19 +400,44 @@ function QuizContent() {
             exit={{ opacity: 0, x: -20 }}
             style={{ flex: 1 }}
           >
-            {/* 1. TYPING MODE UI */}
-            {mode === 'typing' && (
+            {/* 1. TYPING MODES (Fill Blank, Letter Hint, Dictation) */}
+            {currentQ.type !== 'multiple_choice' && (
               <div>
-                <div style={{ textAlign: 'center', marginBottom: '40px', marginTop: '20px' }}>
-                  <div style={{ fontSize: '13px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>
-                    Gõ từ tiếng Anh
-                  </div>
-                  <div style={{ fontSize: '28px', fontWeight: 600, color: 'var(--accent)', whiteSpace: 'pre-wrap' }}>
-                    {currentQ.word.meaning}
-                  </div>
-                  <div style={{ fontSize: '14px', color: 'var(--text-tertiary)', marginTop: '8px' }}>
-                    ({currentQ.word.word.length} chữ cái)
-                  </div>
+                <div style={{ textAlign: 'center', marginBottom: '40px', marginTop: '10px' }}>
+                  {currentQ.type === 'fill_blank' && (
+                    <div style={{ fontSize: '20px', fontWeight: 500, color: 'var(--text-primary)', lineHeight: 1.5 }}>
+                      {currentQ.blankSentence}
+                    </div>
+                  )}
+                  {currentQ.type === 'letter_hint' && (
+                    <>
+                      <div style={{ fontSize: '18px', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: '12px' }}>
+                        {currentQ.word.meaning}
+                      </div>
+                      <div style={{ fontSize: '32px', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '4px' }}>
+                        {currentQ.hint}
+                      </div>
+                    </>
+                  )}
+                  {currentQ.type === 'dictation' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+                      <motion.button
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => playWord(currentQ.word.word)}
+                        style={{
+                          width: '80px', height: '80px', borderRadius: '50%',
+                          background: 'var(--accent)', color: 'white',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          border: 'none', boxShadow: 'var(--shadow-md)', cursor: 'pointer',
+                        }}
+                      >
+                        <Volume2 size={40} />
+                      </motion.button>
+                      <div style={{ fontSize: '16px', color: 'var(--text-secondary)' }}>
+                        Nghe và gõ lại từ bạn nghe được
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -485,10 +450,7 @@ function QuizContent() {
                     placeholder="Gõ đáp án vào đây..."
                     className="input"
                     style={{
-                      fontSize: '24px',
-                      padding: '16px',
-                      textAlign: 'center',
-                      fontWeight: 600,
+                      fontSize: '24px', padding: '16px', textAlign: 'center', fontWeight: 600,
                       borderColor: state === 'feedback' 
                         ? (currentResult?.isCorrect ? 'var(--rating-good)' : 'var(--rating-forgot)')
                         : 'var(--border)',
@@ -525,58 +487,22 @@ function QuizContent() {
               </div>
             )}
 
-            {/* 2. MULTIPLE CHOICE & LISTENING UI */}
-            {mode !== 'typing' && (
+            {/* 2. MULTIPLE CHOICE UI */}
+            {currentQ.type === 'multiple_choice' && (
               <div>
-                <div style={{ textAlign: 'center', marginBottom: '40px', marginTop: '20px' }}>
-                  <div style={{ fontSize: '13px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px' }}>
-                    {mode === 'listening' ? 'Nghe và chọn nghĩa' : 'Chọn nghĩa đúng'}
+                <div style={{ textAlign: 'center', marginBottom: '30px', marginTop: '10px' }}>
+                  <div style={{ fontSize: '36px', fontWeight: 700, color: 'var(--text-primary)' }}>
+                    {currentQ.word.word}
                   </div>
-                  
-                  {mode === 'multiple_choice' ? (
-                    <>
-                      <div style={{ fontSize: '36px', fontWeight: 700, color: 'var(--text-primary)' }}>
-                        {currentQ.word.word}
-                      </div>
-                      {currentQ.word.ipa && (
-                        <div style={{ fontSize: '16px', color: 'var(--text-tertiary)', marginTop: '4px' }}>
-                          {currentQ.word.ipa}
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
-                      {/* Listening Mode Play Button */}
-                      <motion.button
-                        whileTap={{ scale: 0.9 }}
-                        onClick={() => playWord(currentQ.word.word)}
-                        style={{
-                          width: '80px',
-                          height: '80px',
-                          borderRadius: '50%',
-                          background: 'var(--accent)',
-                          color: 'white',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          border: 'none',
-                          boxShadow: 'var(--shadow-md)',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        <Volume2 size={40} />
-                      </motion.button>
-                      {state === 'feedback' && (
-                        <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--text-primary)' }}>
-                          {currentQ.word.word}
-                        </div>
-                      )}
+                  {currentQ.word.ipa && (
+                    <div style={{ fontSize: '16px', color: 'var(--text-tertiary)', marginTop: '4px' }}>
+                      {currentQ.word.ipa}
                     </div>
                   )}
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  {currentQ.options.map((opt, i) => {
+                  {currentQ.options?.map((opt, i) => {
                     const isSelected = userAnswer === opt;
                     const isCorrectOption = opt === currentQ.word.meaning;
                     
@@ -656,17 +582,5 @@ function QuizContent() {
         )}
       </AnimatePresence>
     </div>
-  );
-}
-
-export default function QuizPage() {
-  return (
-    <Suspense fallback={
-      <div className="page-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-        <div className="skeleton" style={{ width: '200px', height: '24px' }} />
-      </div>
-    }>
-      <QuizContent />
-    </Suspense>
   );
 }

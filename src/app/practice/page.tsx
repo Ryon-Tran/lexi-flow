@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ArrowLeft, BookOpen, Layers, Edit3, Grid, Award, Headphones, HelpCircle, Target } from 'lucide-react';
+import { ArrowLeft, BookOpen, Layers, Edit3, Grid, Award, Headphones, HelpCircle, Target, Shuffle, ListOrdered, Keyboard, Volume2 } from 'lucide-react';
 import Link from 'next/link';
 import { LEARNING_MODES } from '@/lib/learning-config';
 
@@ -36,8 +36,14 @@ export default function PracticeHubPage() {
         return <Headphones size={22} />;
       case 'letter_hint':
         return <HelpCircle size={22} />;
-      case 'quiz':
-        return <Target size={22} />;
+      case 'quiz_mc':
+        return <ListOrdered size={22} />;
+      case 'quiz_typing':
+        return <Keyboard size={22} />;
+      case 'quiz_listening':
+        return <Volume2 size={22} />;
+      case 'mixed':
+        return <Shuffle size={22} />;
       default:
         return <BookOpen size={22} />;
     }
