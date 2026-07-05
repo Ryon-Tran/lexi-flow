@@ -162,7 +162,24 @@ function QuizContent() {
     setState('feedback');
   };
 
+  // Auto-advance if correct
+  useEffect(() => {
+    if (state === 'feedback') {
+      const lastResult = results[results.length - 1];
+      if (lastResult?.isCorrect) {
+        const timer = setTimeout(() => {
+          nextQuestion();
+        }, 1200);
+        return () => clearTimeout(timer);
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state, results]);
+
   const nextQuestion = () => {
+    // Prevent double-clicking or race conditions
+    if (state !== 'feedback') return;
+    
     if (currentIndex < questions.length - 1) {
       setCurrentIndex((i) => i + 1);
       setUserAnswer('');
@@ -648,24 +665,25 @@ function QuizContent() {
       </motion.div>
 
       {/* Next Button Container */}
-      <AnimatePresence>
-        {state === 'feedback' && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            style={{ marginTop: '24px' }}
-          >
-            <button
-              onClick={nextQuestion}
-              className="btn-primary"
-              style={{ width: '100%', padding: '16px', fontSize: '16px' }}
+      <div style={{ marginTop: '24px', minHeight: '56px', marginBottom: '24px' }}>
+        <AnimatePresence>
+          {state === 'feedback' && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
             >
-              Tiếp tục <ArrowRight size={18} />
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              <button
+                onClick={nextQuestion}
+                className="btn-primary"
+                style={{ width: '100%', padding: '16px', fontSize: '16px' }}
+              >
+                Tiếp tục <ArrowRight size={18} />
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }

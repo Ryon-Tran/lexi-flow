@@ -80,7 +80,7 @@ export const LEARNING_MODES: LearningModeConfig[] = [
   {
     id: 'quiz_typing',
     name: 'Spelling Quiz',
-    vietnameseName: 'Gõ từ (Chính tả)',
+    vietnameseName: 'Chính tả',
     description: 'Nhìn nghĩa tiếng Việt, gõ lại từ tiếng Anh.',
     enabled: true,
     path: '/quiz?mode=typing',
@@ -89,7 +89,7 @@ export const LEARNING_MODES: LearningModeConfig[] = [
   {
     id: 'quiz_listening',
     name: 'Listening Quiz',
-    vietnameseName: 'Nghe chọn đáp án',
+    vietnameseName: 'Luyện nghe',
     description: 'Nghe phát âm, chọn nghĩa tiếng Việt tương ứng.',
     enabled: true,
     path: '/quiz?mode=listening',
@@ -98,8 +98,8 @@ export const LEARNING_MODES: LearningModeConfig[] = [
   {
     id: 'mixed',
     name: 'Mixed Practice',
-    vietnameseName: 'Thử thách hỗn hợp',
-    description: 'Ôn tập với các dạng câu hỏi thay đổi ngẫu nhiên (điền từ, nghe, trắc nghiệm...).',
+    vietnameseName: 'Hỗn hợp',
+    description: 'Ôn tập với các dạng câu hỏi thay đổi ngẫu nhiên.',
     enabled: true,
     path: '/practice/mixed',
     difficulty: 'hard',
