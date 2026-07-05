@@ -104,7 +104,6 @@ export default function LearnPage() {
         const result = calculateCustomSRS({
           rating: opt as 0 | 3 | 5,
           currentLevel: repetitions,
-          currentWrongCount: wrong_count || 0,
         });
         previews[opt] = getCustomIntervalLabel(result.level, opt);
       }
