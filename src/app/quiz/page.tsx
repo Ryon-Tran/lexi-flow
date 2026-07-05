@@ -162,6 +162,19 @@ function QuizContent() {
     setState('feedback');
   };
 
+  const nextQuestion = () => {
+    // Prevent double-clicking or race conditions
+    if (state !== 'feedback') return;
+    
+    if (currentIndex < questions.length - 1) {
+      setCurrentIndex((i) => i + 1);
+      setUserAnswer('');
+      setState('active');
+    } else {
+      setState('done');
+    }
+  };
+
   // Auto-advance if correct
   useEffect(() => {
     if (state === 'feedback') {
@@ -175,19 +188,6 @@ function QuizContent() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, results]);
-
-  const nextQuestion = () => {
-    // Prevent double-clicking or race conditions
-    if (state !== 'feedback') return;
-    
-    if (currentIndex < questions.length - 1) {
-      setCurrentIndex((i) => i + 1);
-      setUserAnswer('');
-      setState('active');
-    } else {
-      setState('done');
-    }
-  };
 
   // Keyboard shortcut: Enter = next question during feedback
   useEffect(() => {
@@ -545,7 +545,7 @@ function QuizContent() {
             {/* 2. MULTIPLE CHOICE & LISTENING UI */}
             {mode !== 'typing' && (
               <div>
-                <div style={{ textAlign: 'center', marginBottom: '40px', marginTop: '20px' }}>
+                <div style={{ textAlign: 'center', marginBottom: '20px', marginTop: '10px' }}>
                   <div style={{ fontSize: '13px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px' }}>
                     {mode === 'listening' ? 'Nghe và chọn nghĩa' : 'Chọn nghĩa đúng'}
                   </div>
@@ -568,8 +568,8 @@ function QuizContent() {
                         whileTap={{ scale: 0.9 }}
                         onClick={() => playWord(currentQ.word.word)}
                         style={{
-                          width: '80px',
-                          height: '80px',
+                          width: '64px',
+                          height: '64px',
                           borderRadius: '50%',
                           background: 'var(--accent)',
                           color: 'white',
@@ -581,7 +581,7 @@ function QuizContent() {
                           cursor: 'pointer',
                         }}
                       >
-                        <Volume2 size={40} />
+                        <Volume2 size={32} />
                       </motion.button>
                       <div 
                         style={{ 
@@ -603,7 +603,7 @@ function QuizContent() {
                   )}
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {currentQ.options.map((opt, i) => {
                     const isSelected = userAnswer === opt;
                     const isCorrectOption = opt === currentQ.word.meaning;
@@ -635,7 +635,7 @@ function QuizContent() {
                         onClick={() => handleAnswer(opt)}
                         disabled={state === 'feedback'}
                         style={{
-                          padding: '16px 20px',
+                          padding: '12px 16px',
                           background: bg,
                           border: `2px solid ${border}`,
                           borderRadius: 'var(--radius-lg)',
@@ -665,7 +665,7 @@ function QuizContent() {
       </motion.div>
 
       {/* Next Button Container */}
-      <div style={{ marginTop: '24px', minHeight: '56px', marginBottom: '24px' }}>
+      <div style={{ marginTop: '12px', minHeight: '48px', marginBottom: '12px' }}>
         <AnimatePresence>
           {state === 'feedback' && (
             <motion.div
@@ -676,7 +676,7 @@ function QuizContent() {
               <button
                 onClick={nextQuestion}
                 className="btn-primary"
-                style={{ width: '100%', padding: '16px', fontSize: '16px' }}
+                style={{ width: '100%', padding: '12px', fontSize: '16px' }}
               >
                 Tiếp tục <ArrowRight size={18} />
               </button>

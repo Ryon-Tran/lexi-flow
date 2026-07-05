@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft,
@@ -118,7 +118,7 @@ export default function MixedPracticePage() {
   useEffect(() => {
     if (!loading && state === 'loading') {
       if (words.length < 4) {
-        setState('done'); // Hack to show empty state (handled below)
+        setTimeout(() => setState('done'), 0); // Hack to show empty state (handled below)
       } else {
         setTimeout(() => startSession(), 0);
       }
@@ -175,6 +175,18 @@ export default function MixedPracticePage() {
     setState('feedback');
   };
 
+  const nextQuestion = () => {
+    if (state !== 'feedback') return;
+
+    if (currentIndex < questions.length - 1) {
+      setCurrentIndex((i) => i + 1);
+      setUserAnswer('');
+      setState('active');
+    } else {
+      setState('done');
+    }
+  };
+
   // Auto-advance if correct
   useEffect(() => {
     if (state === 'feedback') {
@@ -188,18 +200,6 @@ export default function MixedPracticePage() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, results]);
-
-  const nextQuestion = () => {
-    if (state !== 'feedback') return;
-
-    if (currentIndex < questions.length - 1) {
-      setCurrentIndex((i) => i + 1);
-      setUserAnswer('');
-      setState('active');
-    } else {
-      setState('done');
-    }
-  };
 
   // Keyboard shortcut: Enter = next question during feedback
   useEffect(() => {
@@ -419,7 +419,7 @@ export default function MixedPracticePage() {
             {/* 1. TYPING MODES (Fill Blank, Letter Hint, Dictation) */}
             {currentQ.type !== 'multiple_choice' && (
               <div>
-                <div style={{ textAlign: 'center', marginBottom: '40px', marginTop: '10px' }}>
+                <div style={{ textAlign: 'center', marginBottom: '20px', marginTop: '10px' }}>
                   {currentQ.type === 'fill_blank' && (
                     <div style={{ fontSize: '20px', fontWeight: 500, color: 'var(--text-primary)', lineHeight: 1.5 }}>
                       {currentQ.blankSentence}
@@ -441,13 +441,13 @@ export default function MixedPracticePage() {
                         whileTap={{ scale: 0.9 }}
                         onClick={() => playWord(currentQ.word.word)}
                         style={{
-                          width: '80px', height: '80px', borderRadius: '50%',
+                          width: '64px', height: '64px', borderRadius: '50%',
                           background: 'var(--accent)', color: 'white',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           border: 'none', boxShadow: 'var(--shadow-md)', cursor: 'pointer',
                         }}
                       >
-                        <Volume2 size={40} />
+                        <Volume2 size={32} />
                       </motion.button>
                       <div style={{ fontSize: '16px', color: 'var(--text-secondary)' }}>
                         Nghe và gõ lại từ bạn nghe được
@@ -506,7 +506,7 @@ export default function MixedPracticePage() {
             {/* 2. MULTIPLE CHOICE UI */}
             {currentQ.type === 'multiple_choice' && (
               <div>
-                <div style={{ textAlign: 'center', marginBottom: '30px', marginTop: '10px' }}>
+                <div style={{ textAlign: 'center', marginBottom: '20px', marginTop: '10px' }}>
                   <div style={{ fontSize: '36px', fontWeight: 700, color: 'var(--text-primary)' }}>
                     {currentQ.word.word}
                   </div>
@@ -517,7 +517,7 @@ export default function MixedPracticePage() {
                   )}
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {currentQ.options?.map((opt, i) => {
                     const isSelected = userAnswer === opt;
                     const isCorrectOption = opt === currentQ.word.meaning;
@@ -549,7 +549,7 @@ export default function MixedPracticePage() {
                         onClick={() => handleAnswer(opt)}
                         disabled={state === 'feedback'}
                         style={{
-                          padding: '16px 20px',
+                          padding: '12px 16px',
                           background: bg,
                           border: `2px solid ${border}`,
                           borderRadius: 'var(--radius-lg)',
@@ -579,7 +579,7 @@ export default function MixedPracticePage() {
       </motion.div>
 
       {/* Next Button Container */}
-      <div style={{ marginTop: '24px', minHeight: '56px', marginBottom: '24px' }}>
+      <div style={{ marginTop: '12px', minHeight: '48px', marginBottom: '12px' }}>
         <AnimatePresence>
           {state === 'feedback' && (
             <motion.div
@@ -590,7 +590,7 @@ export default function MixedPracticePage() {
               <button
                 onClick={nextQuestion}
                 className="btn-primary"
-                style={{ width: '100%', padding: '16px', fontSize: '16px' }}
+                style={{ width: '100%', padding: '12px', fontSize: '16px' }}
               >
                 Tiếp tục <ArrowRight size={18} />
               </button>
