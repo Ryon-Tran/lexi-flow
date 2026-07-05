@@ -14,7 +14,33 @@ import { useReviews } from '@/hooks/use-reviews';
 import { useTTS } from '@/hooks/use-tts';
 import { RATING_OPTIONS } from '@/lib/constants';
 import { calculateSM2, getIntervalLabel } from '@/lib/sm2';
+import { SRS_CONFIG } from '@/lib/learning-config';
+import { calculateCustomSRS, getCustomIntervalLabel } from '@/lib/custom-srs';
 import type { WordWithReview, Rating, SessionResult } from '@/types';
+
+const CUSTOM_RATING_OPTIONS = [
+  {
+    rating: 0 as const,
+    label: 'Chưa biết',
+    emoji: '😵',
+    color: 'var(--rating-forgot)',
+    bg: 'var(--rating-forgot-bg)',
+  },
+  {
+    rating: 3 as const,
+    label: 'Khá nhớ',
+    emoji: '🤔',
+    color: 'var(--rating-hard)',
+    bg: 'var(--rating-hard-bg)',
+  },
+  {
+    rating: 5 as const,
+    label: 'Đã thuộc',
+    emoji: '😎',
+    color: 'var(--rating-easy)',
+    bg: 'var(--rating-easy-bg)',
+  },
+] as const;
 
 type SessionState = 'loading' | 'pre' | 'active' | 'done';
 
@@ -68,16 +94,30 @@ export default function LearnPage() {
   // Calculate predicted intervals for current word
   const getPreviewIntervals = () => {
     if (!currentWord?.reviews) return {};
-    const { ease_factor, interval_days, repetitions } = currentWord.reviews;
+    const isCustom = SRS_CONFIG.scheduler === 'custom_srs';
+    const { ease_factor, interval_days, repetitions, wrong_count } = currentWord.reviews;
     const previews: Record<number, string> = {};
-    for (const opt of RATING_OPTIONS) {
-      const result = calculateSM2({
-        quality: opt.rating,
-        easeFactor: ease_factor,
-        interval: interval_days,
-        repetitions,
-      });
-      previews[opt.rating] = getIntervalLabel(result.interval);
+
+    if (isCustom) {
+      const options = [0, 3, 5];
+      for (const opt of options) {
+        const result = calculateCustomSRS({
+          rating: opt as 0 | 3 | 5,
+          currentLevel: repetitions,
+          currentWrongCount: wrong_count || 0,
+        });
+        previews[opt] = getCustomIntervalLabel(result.level, opt);
+      }
+    } else {
+      for (const opt of RATING_OPTIONS) {
+        const result = calculateSM2({
+          quality: opt.rating,
+          easeFactor: ease_factor,
+          interval: interval_days,
+          repetitions,
+        });
+        previews[opt.rating] = getIntervalLabel(result.interval);
+      }
     }
     return previews;
   };
@@ -93,10 +133,17 @@ export default function LearnPage() {
         handleFlip();
       }
       if (isFlipped && !isSubmitting) {
-        if (e.key === '1') handleRate(0 as Rating);
-        if (e.key === '2') handleRate(3 as Rating);
-        if (e.key === '3') handleRate(4 as Rating);
-        if (e.key === '4') handleRate(5 as Rating);
+        const isCustom = SRS_CONFIG.scheduler === 'custom_srs';
+        if (isCustom) {
+          if (e.key === '1') handleRate(0 as Rating);
+          if (e.key === '2') handleRate(3 as Rating);
+          if (e.key === '3') handleRate(5 as Rating);
+        } else {
+          if (e.key === '1') handleRate(0 as Rating);
+          if (e.key === '2') handleRate(3 as Rating);
+          if (e.key === '3') handleRate(4 as Rating);
+          if (e.key === '4') handleRate(5 as Rating);
+        }
       }
     };
     window.addEventListener('keydown', handleKey);
@@ -104,7 +151,7 @@ export default function LearnPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, isFlipped, isSubmitting, currentWord]);
 
-  const handleRate = async (rating: Rating) => {
+  async function handleRate(rating: Rating) {
     if (!currentWord || !currentWord.reviews || isSubmitting) return;
     setIsSubmitting(true);
 
@@ -142,7 +189,7 @@ export default function LearnPage() {
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }
 
   // ========================
   // Loading State
@@ -676,7 +723,7 @@ export default function LearnPage() {
               paddingTop: '12px',
             }}
           >
-            {RATING_OPTIONS.map((opt) => (
+            {(SRS_CONFIG.scheduler === 'custom_srs' ? CUSTOM_RATING_OPTIONS : RATING_OPTIONS).map((opt) => (
               <motion.button
                 key={opt.rating}
                 whileTap={{ scale: 0.95 }}
@@ -688,14 +735,15 @@ export default function LearnPage() {
                   alignItems: 'center',
                   gap: '4px',
                   padding: '12px 8px',
-                  background:
+                  background: 'bg' in opt ? opt.bg : (
                     opt.rating === 0
                       ? 'var(--rating-forgot-bg)'
                       : opt.rating === 3
                       ? 'var(--rating-hard-bg)'
                       : opt.rating === 4
                       ? 'var(--rating-good-bg)'
-                      : 'var(--rating-easy-bg)',
+                      : 'var(--rating-easy-bg)'
+                  ),
                   border: 'none',
                   borderRadius: 'var(--radius-xl)',
                   cursor: isSubmitting ? 'wait' : 'pointer',
@@ -708,14 +756,7 @@ export default function LearnPage() {
                   style={{
                     fontSize: '12px',
                     fontWeight: 600,
-                    color:
-                      opt.rating === 0
-                        ? 'var(--rating-forgot)'
-                        : opt.rating === 3
-                        ? 'var(--rating-hard)'
-                        : opt.rating === 4
-                        ? 'var(--rating-good)'
-                        : 'var(--rating-easy)',
+                    color: opt.color,
                   }}
                 >
                   {opt.label}

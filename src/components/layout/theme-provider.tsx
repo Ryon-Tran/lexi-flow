@@ -8,13 +8,15 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    const saved = localStorage.getItem('lexi-theme') as 'light' | 'dark' | null;
-    if (saved) {
-      setTheme(saved);
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      setTheme('dark');
-    }
+    setTimeout(() => {
+      setMounted(true);
+      const saved = localStorage.getItem('lexi-theme') as 'light' | 'dark' | null;
+      if (saved) {
+        setTheme(saved);
+      } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        setTheme('dark');
+      }
+    }, 0);
   }, []);
 
   useEffect(() => {

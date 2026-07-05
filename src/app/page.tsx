@@ -13,6 +13,7 @@ import {
   Clock,
   Library,
   Target,
+  Layers,
 } from 'lucide-react';
 import { useReviews } from '@/hooks/use-reviews';
 import type { DashboardStats } from '@/types';
@@ -379,6 +380,56 @@ export default function DashboardPage() {
                   }}
                 >
                   Nhập từ vựng thủ công
+                </div>
+              </div>
+            </motion.div>
+          </Link>
+          <Link href="/practice" style={{ textDecoration: 'none' }}>
+            <motion.div
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
+              className="glass-card"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '14px',
+                padding: '16px',
+                cursor: 'pointer',
+                border: '1px solid var(--accent-light)',
+                background: 'rgba(0, 82, 255, 0.02)',
+              }}
+            >
+              <div
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: 'var(--radius-full)',
+                  background: 'var(--accent-light)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'var(--accent)',
+                }}
+              >
+                <Layers size={20} />
+              </div>
+              <div>
+                <div
+                  style={{
+                    fontWeight: 600,
+                    fontSize: '15px',
+                    color: 'var(--text-primary)',
+                  }}
+                >
+                  Luyện tập chuyên sâu
+                </div>
+                <div
+                  style={{
+                    fontSize: '13px',
+                    color: 'var(--text-secondary)',
+                  }}
+                >
+                  Các chế độ luyện điền từ, ghép từ, nghe chính tả...
                 </div>
               </div>
             </motion.div>

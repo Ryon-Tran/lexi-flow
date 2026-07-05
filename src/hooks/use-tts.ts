@@ -9,14 +9,16 @@ export function useTTS() {
   const [isSpeaking, setIsSpeaking] = useState(false);
 
   useEffect(() => {
-    setIsAvailable(isTTSAvailable());
+    setTimeout(() => {
+      setIsAvailable(isTTSAvailable());
 
-    // Load voices (some browsers load async)
-    if (typeof window !== 'undefined' && window.speechSynthesis) {
-      window.speechSynthesis.onvoiceschanged = () => {
-        setIsAvailable(true);
-      };
-    }
+      // Load voices (some browsers load async)
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.onvoiceschanged = () => {
+          setIsAvailable(true);
+        };
+      }
+    }, 0);
   }, []);
 
   const playWord = useCallback((word: string) => {

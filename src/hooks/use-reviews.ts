@@ -4,6 +4,8 @@ import { useState, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { USER_ID, MEMORIZED_REPETITIONS, MEMORIZED_INTERVAL_DAYS } from '@/lib/constants';
 import { calculateSM2 } from '@/lib/sm2';
+import { SRS_CONFIG } from '@/lib/learning-config';
+import { calculateCustomSRS } from '@/lib/custom-srs';
 import type { WordWithReview, DashboardStats, Rating } from '@/types';
 
 /** Hook for learning session and review operations */
@@ -72,28 +74,55 @@ export function useReviews() {
       const supabase = createClient();
       if (!supabase) throw new Error('Supabase chưa được cấu hình');
 
-      const result = calculateSM2({
-        quality: rating as number,
-        easeFactor: currentReview.ease_factor,
-        interval: currentReview.interval_days,
-        repetitions: currentReview.repetitions,
-      });
+      let updateData: Record<string, unknown>;
 
-      const isCorrect = (rating as number) >= 3;
+      if (SRS_CONFIG.scheduler === 'custom_srs') {
+        // Normalize rating to custom srs inputs: 0 (unknown), 3 (remembered), 5 (mastered)
+        let normalizedRating: 0 | 3 | 5 = 3;
+        if (rating === 0) normalizedRating = 0;
+        else if (rating === 5) normalizedRating = 5;
 
-      const updateData: Record<string, unknown> = {
-        ease_factor: result.easeFactor,
-        interval_days: result.interval,
-        repetitions: result.repetitions,
-        last_review: new Date().toISOString(),
-        next_review: result.nextReview.toISOString(),
-      };
+        const result = calculateCustomSRS({
+          rating: normalizedRating,
+          currentLevel: currentReview.repetitions,
+        });
 
-      // Increment the appropriate counter
-      if (isCorrect) {
-        updateData.correct_count = (currentReview.correct_count || 0) + 1;
+        updateData = {
+          repetitions: result.level,
+          interval_days: result.intervalDays,
+          last_review: new Date().toISOString(),
+          next_review: result.nextReview.toISOString(),
+        };
+
+        if (result.isWrong) {
+          updateData.wrong_count = (currentReview.wrong_count || 0) + 1;
+        } else {
+          updateData.correct_count = (currentReview.correct_count || 0) + 1;
+        }
       } else {
-        updateData.wrong_count = (currentReview.wrong_count || 0) + 1;
+        const result = calculateSM2({
+          quality: rating as number,
+          easeFactor: currentReview.ease_factor,
+          interval: currentReview.interval_days,
+          repetitions: currentReview.repetitions,
+        });
+
+        const isCorrect = (rating as number) >= 3;
+
+        updateData = {
+          ease_factor: result.easeFactor,
+          interval_days: result.interval,
+          repetitions: result.repetitions,
+          last_review: new Date().toISOString(),
+          next_review: result.nextReview.toISOString(),
+        };
+
+        // Increment the appropriate counter
+        if (isCorrect) {
+          updateData.correct_count = (currentReview.correct_count || 0) + 1;
+        } else {
+          updateData.wrong_count = (currentReview.wrong_count || 0) + 1;
+        }
       }
 
       const { error: err } = await supabase
@@ -151,10 +180,12 @@ export function useReviews() {
           return;
         }
 
-        if (
-          review.repetitions >= MEMORIZED_REPETITIONS &&
-          review.interval_days >= MEMORIZED_INTERVAL_DAYS
-        ) {
+        const isCustom = SRS_CONFIG.scheduler === 'custom_srs';
+        const isMemorized = isCustom
+          ? review.repetitions >= 5
+          : review.repetitions >= MEMORIZED_REPETITIONS && review.interval_days >= MEMORIZED_INTERVAL_DAYS;
+
+        if (isMemorized) {
           memorized++;
         }
 
