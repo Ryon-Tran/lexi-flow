@@ -566,11 +566,22 @@ function QuizContent() {
                       >
                         <Volume2 size={40} />
                       </motion.button>
-                      {state === 'feedback' && (
-                        <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--text-primary)' }}>
-                          {currentQ.word.word}
-                        </div>
-                      )}
+                      <div 
+                        style={{ 
+                          fontSize: '24px', 
+                          fontWeight: 700, 
+                          color: 'var(--text-primary)',
+                          opacity: state === 'feedback' ? 1 : 0,
+                          visibility: state === 'feedback' ? 'visible' : 'hidden',
+                          minHeight: '36px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          transition: 'opacity 0.2s'
+                        }}
+                      >
+                        {currentQ.word.word}
+                      </div>
                     </div>
                   )}
                 </div>
